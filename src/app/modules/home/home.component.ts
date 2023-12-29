@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms'
 import { CookieService } from 'ngx-cookie-service'
+import { MessageService } from 'primeng/api'
 
 import { UserService } from 'src/app/services/user/user.service'
 import { AuthRequest } from './../../models/interfaces/user/auth/AuthRequest';
@@ -28,7 +29,8 @@ export class HomeComponent {
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private messageService: MessageService
   ) {}
 
   onSubmitLoginForm(): void {
@@ -39,12 +41,23 @@ export class HomeComponent {
             this.cookieService.set('USER_INFO', response?.token);
 
             this.loginForm.reset();
-            alert('login success');
+
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sucesso',
+              detail: `Bem vindo de volta ${response?.name}!`,
+              life: 2000,
+            });
           }
         },
         error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: `Erro ao fazer o login!`,
+            life: 2000,
+          });
           console.log(err);
-          alert('email ou senha inválida');
         },
       });
     }  }
@@ -56,14 +69,24 @@ export class HomeComponent {
         .subscribe({
           next: (response) => {
             if (response) {
-              alert('Usuário teste criado com sucesso!');
               this.signupForm.reset();
               this.loginCard = true;
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Sucesso',
+                detail: 'Usuário criado com sucesso!',
+                life: 2000,
+              });
             }
           },
           error: (err) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro',
+              detail: `Erro ao criar usuário!`,
+              life: 2000,
+            });
             console.log(err);
-            alert('Erro ao cadastrar');
           },
         });
     }
