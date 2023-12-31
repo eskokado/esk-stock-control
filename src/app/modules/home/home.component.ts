@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms'
 import { CookieService } from 'ngx-cookie-service'
 import { MessageService } from 'primeng/api'
@@ -6,13 +6,15 @@ import { MessageService } from 'primeng/api'
 import { UserService } from 'src/app/services/user/user.service'
 import { AuthRequest } from './../../models/interfaces/user/auth/AuthRequest';
 import { SignupUserRequest } from 'src/app/models/interfaces/user/SignupUserRequest'
+import { Subject } from 'rxjs'
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnDestroy {
+  private destroy$ = new Subject<void>();
   loginCard = true;
 
   loginForm = this.formBuilder.group({
@@ -90,5 +92,10 @@ export class HomeComponent {
           },
         });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
