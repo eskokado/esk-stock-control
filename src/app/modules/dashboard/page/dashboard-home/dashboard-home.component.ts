@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js'
 import { MessageService } from 'primeng/api'
-import { Subject } from 'rxjs'
+import { Subject, takeUntil } from 'rxjs'
 import { GetAllProductsResponse } from 'src/app/models/interfaces/products/response/GetAllProductsResponse'
 import { ProductsService } from 'src/app/services/products/products.service'
 import { ProductsDataTransferService } from 'src/app/shared/services/products/products-data-transfer.service'
@@ -29,23 +29,27 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   }
 
   getProductsDatas(): void {
-    this.productsService.getAllProducts().subscribe({
-      next: (response) => {
-        if (response.length > 0) {
-          this.productsList = response;
-          this.productsDtService.setProductsDatas(this.productsList);
-        }
-      },
-      error: (err) => {
-        console.log(err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Erro ao buscar produtos!',
-          life: 2500,
-        });
-      },
-    });
+    this.productsService
+      .getAllProducts()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.length > 0) {
+            this.productsList = response;
+            this.productsDtService.setProductsDatas(this.productsList);
+            this.setProductsChartConfig();
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao buscar produtos!',
+            life: 2500,
+          });
+        },
+      });
   }
 
   setProductsChartConfig(): void {
