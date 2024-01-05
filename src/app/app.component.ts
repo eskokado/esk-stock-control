@@ -9,9 +9,13 @@ import { PrimeNGConfig } from 'primeng/api';
 export class AppComponent implements OnInit {
   title = 'stock-control';
 
-  constructor(private primengConfig: PrimeNGConfig) {}
+  constructor(private primeNgConfig: PrimeNGConfig) {}
 
   ngOnInit() {
-      this.primengConfig.ripple = true;
+      this.primeNgConfig.ripple = true;
+      this.primeNgConfig.setTranslation({
+        apply: 'Aplicar',
+        clear: 'Limpar'
+      })
   }
 }
